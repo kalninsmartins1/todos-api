@@ -1,16 +1,16 @@
 # Class for controlling incoming requests
 class TodosController < ApplicationController
   before_action :find_todo, only: [:show, :update, :destroy]
+
   def index
-    @todos = Todo.all
-    json_response(@todos)
+    json_response(Todo.all)
   end
 
   def show
-    if @todo.id > -1 # -1 indicates that Todo has not been found
-      json_response(@todo)
+    if @todo.id == -1
+      head :not_found
     else
-      json_response('Couldn\'t find Todo', :not_found)
+      json_response(@todo)
     end
   end
 
@@ -24,13 +24,19 @@ class TodosController < ApplicationController
   end
 
   def update
-    @todo.update(todo_params)
-    head :no_content
+    if @todo.update(todo_params)
+      json_response(@todo, :ok)
+    else
+      json_response(@todo.errors.full_messages, :bad_request)
+    end
   end
 
   def destroy
-    @todo.destroy
-    head :no_content
+    if @todo.destroy
+      head :no_content
+    else
+      head :not_found
+    end
   end
 
   private

@@ -11,4 +11,8 @@ class NullItemRecord
   def destroy
     false
   end
+
+  def errors
+    NullItemErrors.new
+  end
 end

@@ -11,4 +11,8 @@ class NullTodoRecord
   def destroy
     false
   end
+
+  def errors
+    NullTodoErrors.new
+  end
 end

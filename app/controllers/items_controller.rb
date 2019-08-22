@@ -2,21 +2,20 @@
 class ItemsController < ApplicationController
   before_action :find_todo, only: [:index, :create]
   before_action :find_item, only: [:show, :update, :destroy]
-  ITEM_NOT_FOUND_MESSAGE = 'Couldn\'t find Item'.freeze
 
   def index
-    if @todo.id > -1
-      json_response(@todo.items.all)
+    if @todo.id == -1
+      head :not_found
     else
-      json_response('Couldn\'t find Todo', :not_found)
+      json_response(@todo.items.all)
     end
   end
 
   def show
-    if @item.id > -1
-      json_response(@item)
+    if @item.id == -1
+      head :not_found
     else
-      json_response(ITEM_NOT_FOUND_MESSAGE, :not_found)
+      json_response(@item)
     end
   end
 
@@ -33,18 +32,19 @@ class ItemsController < ApplicationController
   end
 
   def update
-    if @item.id == -1
-      json_response(ITEM_NOT_FOUND_MESSAGE, :not_found)
-    elsif @item.update(item_params)
-      head :no_content
+    if @item.update(item_params)
+      json_response(@item, :ok)
     else
       json_response(@item.errors.full_messages, :bad_request)
     end
   end
 
   def destroy
-    @item.destroy
-    head :no_content
+    if @item.destroy
+      head :no_content
+    else
+      head :not_found
+    end
   end
 
   private
