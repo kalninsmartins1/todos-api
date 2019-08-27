@@ -1,10 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe 'Todos show request', type: :request do
-  context 'when the record exists' do
-    let(:todo) { create(:todo) }
+  let!(:user) { create(:user) }
 
-    before(:each) { get todo_path(todo) }
+  context 'when the record exists' do
+    let(:todo) { create(:todo, created_by: user.id) }
+
+    before(:each) { get todo_path(todo), headers: valid_headers(user.id) }
 
     it 'returns the todo' do
       expect(json).not_to be_empty
@@ -17,10 +19,10 @@ RSpec.describe 'Todos show request', type: :request do
   end
 
   context 'when the record does not exist' do
-    before(:each) { get todo_path(-1) }
+    before(:each) { get todo_path(-1), headers: valid_headers(user.id) }
 
-    it 'returns status code :not_found' do
-      expect(response).to have_http_status(:not_found)
+    it 'returns status code :unprocessable_entity' do
+      expect(response).to have_http_status(:unprocessable_entity)
     end
   end
 end

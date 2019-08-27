@@ -76,7 +76,8 @@ RSpec.configure do |config|
     end
   end
 
-  config.include RequestSpecHelper, type: :request
+  config.include JsonSpecHelper
+  config.include AuthSpecHelper
 end
 
 # configure shoulda matchers to use rspec as the test framework and full matcher libraries for rails

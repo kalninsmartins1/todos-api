@@ -1,11 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe 'Todos update request', type: :request do
+  let(:user) { create(:user) }
+
   context 'when todo exists' do
-    let!(:todo) { create(:todo) }
+    let!(:todo) { create(:todo, created_by: user.id) }
     let(:new_todo) { build(:todo) }
 
-    before(:each) { patch todo_path(todo), params: {todo: {title: new_todo.title}} }
+    before(:each) { patch todo_path(todo), params: {todo: {title: new_todo.title}}, headers: valid_headers(user.id) }
 
     it 'todo title is updated' do
       todo.reload
@@ -18,7 +20,7 @@ RSpec.describe 'Todos update request', type: :request do
   end
 
   context 'when todo does not exists' do
-    before(:each) { patch todo_path(-1), params: {todo: {title: ''}} }
+    before(:each) { patch todo_path(-1), params: {todo: {title: ''}}, headers: valid_headers(user.id) }
 
     it 'returns status code :bad_request' do
       expect(response).to have_http_status(:bad_request)

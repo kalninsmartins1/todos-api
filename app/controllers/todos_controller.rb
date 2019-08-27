@@ -1,48 +1,48 @@
 # Class for controlling incoming requests
 class TodosController < ApplicationController
-  before_action :find_todo, only: [:show, :update, :destroy]
+  attr_writer :todo
 
   def index
-    json_response(Todo.all)
+    json_response(current_user.todos.all)
   end
 
   def show
-    if @todo.id == -1
-      head :not_found
+    if todo.valid?
+      json_response(todo)
     else
-      json_response(@todo)
+      head :unprocessable_entity
     end
   end
 
   def create
-    @todo = Todo.new(todo_params)
-    if @todo.save
-      json_response(@todo, :created)
+    todo = current_user.todos.build(todo_params)
+    if todo.save
+      json_response(todo, :created)
     else
-      json_response(@todo.errors.full_messages, :bad_request)
+      json_response(todo.errors.full_messages, :bad_request)
     end
   end
 
   def update
-    if @todo.update(todo_params)
-      json_response(@todo, :ok)
+    if todo.update(todo_params)
+      json_response(todo, :ok)
     else
-      json_response(@todo.errors.full_messages, :bad_request)
+      json_response(todo.errors.full_messages, :bad_request)
     end
   end
 
   def destroy
-    if @todo.destroy
+    if todo.destroy
       head :no_content
     else
-      head :not_found
+      head :unprocessable_entity
     end
   end
 
   private
 
-  def find_todo
-    @todo = ValidTodoDecorator.find(params[:id])
+  def todo
+    @todo ||= ValidTodoDecorator.find_in_array(current_user.todos, params[:id])
   end
 
   def todo_params

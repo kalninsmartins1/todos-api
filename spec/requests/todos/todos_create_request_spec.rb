@@ -1,11 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe 'Todos create request', type: :request do
+  let(:user) { create(:user) }
   let(:todo) { build(:todo) }
   let(:valid_attributes) { {todo: {title: todo.title, created_by: todo.created_by}} }
 
   context 'when the request is valid' do
-    before(:each) { post todos_path, params: valid_attributes }
+    before(:each) { post todos_path, params: valid_attributes, headers: valid_headers(user.id) }
 
     it 'creates a todo' do
       expect(json['title']).to eq(todo.title)
@@ -17,7 +18,7 @@ RSpec.describe 'Todos create request', type: :request do
   end
 
   context 'invalid request' do
-    before(:each) { post todos_path, params: {todo: {title: todo.title}} }
+    before(:each) { post todos_path, params: {todo: {title: todo.title, created_by: nil}}, headers: valid_headers(user.id) }
 
     it 'returns status code :bad_request' do
       expect(response).to have_http_status(:bad_request)

@@ -1,13 +1,15 @@
 require 'rails_helper'
 
 RSpec.describe ItemsController, type: :controller do
-  let!(:todo) { create(:todo) }
+  let!(:user) { create(:user) }
+  let!(:todo) { create(:todo, created_by: user.id) }
 
   context 'destroy method' do
     let!(:item) { create(:item, todo_id: todo.id) }
 
     context 'valid parameters' do
       def valid_destroy
+        prepare_auth_headers(user.id)
         get :destroy, params: {todo_id: todo.id, id: item.id}
       end
 
@@ -18,6 +20,7 @@ RSpec.describe ItemsController, type: :controller do
 
     context 'invalid parameters' do
       def invalid_destroy
+        prepare_auth_headers(user.id)
         get :destroy, params: {todo_id: todo.id, id: -1}
       end
 
@@ -32,6 +35,7 @@ RSpec.describe ItemsController, type: :controller do
 
     context 'valid parameters' do
       def valid_create
+        prepare_auth_headers(user.id)
         post :create, params: {todo_id: todo.id, item: {name: item.name, done: item.done}}
       end
 
@@ -42,6 +46,7 @@ RSpec.describe ItemsController, type: :controller do
 
     context 'invalid parameters' do
       def invalid_create
+        prepare_auth_headers(user.id)
         post :create, params: {todo_id: todo.id, item: {name: '', done: item.done}}
       end
 

@@ -8,7 +8,15 @@ class NullItemRecord
     false
   end
 
+  def save
+    false
+  end
+
   def destroy
+    false
+  end
+
+  def valid?
     false
   end
 

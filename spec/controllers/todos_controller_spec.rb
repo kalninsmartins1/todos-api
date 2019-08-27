@@ -1,11 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe TodosController, type: :controller do
+  let!(:user) { create(:user) }
+
   context 'destroy method' do
-    let!(:todo) { create(:todo) }
+    let!(:todo) { create(:todo, created_by: user.id) }
 
     context 'valid parameters' do
       def valid_destroy
+        prepare_auth_headers(user.id)
         get :destroy, params: {id: todo.id}
       end
 
@@ -16,6 +19,7 @@ RSpec.describe TodosController, type: :controller do
 
     context 'invalid parameters' do
       def invalid_destroy
+        prepare_auth_headers(user.id)
         get :destroy, params: {id: -1}
       end
 
@@ -30,6 +34,7 @@ RSpec.describe TodosController, type: :controller do
 
     context 'valid parameters' do
       def valid_create
+        prepare_auth_headers(user.id)
         post :create, params: {todo: {title: todo.title, created_by: todo.created_by}}
       end
 
@@ -40,6 +45,7 @@ RSpec.describe TodosController, type: :controller do
 
     context 'invalid parameters' do
       def invalid_create
+        prepare_auth_headers(user.id)
         post :create, params: {todo: {title: ''}}
       end
 

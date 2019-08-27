@@ -1,13 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe 'Items update request' do
-  let(:todo) { create(:todo) }
+  let(:user) { create(:user) }
+  let(:todo) { create(:todo, created_by: user.id) }
   let(:valid_attributes) { {item: {name: 'Mozart'}} }
 
   context 'when item exists' do
     let(:item) { create(:item, todo_id: todo.id) }
 
-    before(:each) { patch todo_item_path(todo, item), params: valid_attributes }
+    before(:each) { patch todo_item_path(todo, item), params: valid_attributes, headers: valid_headers(user.id) }
 
     it 'returns status code :ok' do
       expect(response).to have_http_status(:ok)
@@ -20,7 +21,7 @@ RSpec.describe 'Items update request' do
   end
 
   context 'when the item does not exist' do
-    before(:each) { patch todo_item_path(todo, -1), params: valid_attributes }
+    before(:each) { patch todo_item_path(todo, -1), params: valid_attributes, headers: valid_headers(user.id) }
 
     it 'returns status code :bad_request' do
       expect(response).to have_http_status(:bad_request)

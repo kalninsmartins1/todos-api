@@ -1,9 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe 'Todos index request', type: :request do
-  let!(:todos) { create_list(:todo, 10) }
+  let!(:user) { create(:user) }
+  let!(:todos) { create_list(:todo, 10, created_by: user.id) }
 
-  before(:each) { get todos_path }
+  before(:each) { get todos_path, headers: valid_headers(user.id) }
 
   it 'returns todos' do
     # Note `json` is a custom helper to parse JSON responses

@@ -12,6 +12,20 @@ class NullTodoRecord
     false
   end
 
+  def valid?
+    false
+  end
+
+  def items
+    create = Struct.new(:null) do
+      def create(_arg)
+        NullItemRecord.new
+      end
+    end
+
+    create.new
+  end
+
   def errors
     NullTodoErrors.new
   end
