@@ -12,14 +12,10 @@ module AuthSpecHelper
   end
 
   def valid_headers(user_id)
-    {
-      'Authorization' => token_generator(user_id)
-    }
+    {authorization: token_generator(user_id)}
   end
 
   def invalid_headers
-    {
-      'Authorization' => nil
-    }
+    {authorization: nil}
   end
 end

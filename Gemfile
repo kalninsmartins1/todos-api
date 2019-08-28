@@ -17,6 +17,10 @@ gem 'puma', '~> 3.11'
 gem 'bcrypt', '~> 3.1.7'
 # Used for json web token authentication
 gem 'jwt'
+# JSON serialization
+gem 'active_model_serializers', '~> 0.10.0'
+# Data pagination
+gem 'will_paginate', '~> 3.1.0'
 # Use ActiveStorage variant
 # gem 'mini_magick', '~> 4.8'
 

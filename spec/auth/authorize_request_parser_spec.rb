@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe AuthorizeRequestParser do
   let(:user) { create(:user) }
-  let(:header) { {'Authorization' => token_generator(user.id)} }
+  let(:header) { {authorization: token_generator(user.id)} }
 
   subject(:invalid_request_obj) { described_class.new({}) }
   subject(:request_obj) { described_class.new(header) }
@@ -25,7 +25,7 @@ RSpec.describe AuthorizeRequestParser do
 
       context 'when invalid token' do
         subject(:invalid_request_obj) do
-          described_class.new('Authorization' => token_generator(5))
+          described_class.new(authorization: token_generator(5))
         end
 
         it 'raises an InvalidToken error' do
@@ -35,7 +35,7 @@ RSpec.describe AuthorizeRequestParser do
       end
 
       context 'when token is expired' do
-        let(:header) { {'Authorization' => expired_token_generator(user.id)} }
+        let(:header) { {authorization: expired_token_generator(user.id)} }
         subject(:request_obj) { described_class.new(header) }
 
         it 'raises ExceptionHandler::ExpiredSignature error' do
@@ -48,7 +48,7 @@ RSpec.describe AuthorizeRequestParser do
       end
 
       context 'fake token' do
-        let(:header) { {'Authorization' => 'foobar'} }
+        let(:header) { {authorization: 'foobar'} }
         subject(:invalid_request_obj) { described_class.new(header) }
 
         it 'handles JWT::DecodeError' do
