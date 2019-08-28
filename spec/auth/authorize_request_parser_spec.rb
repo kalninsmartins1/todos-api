@@ -10,40 +10,24 @@ RSpec.describe AuthorizeRequestParser do
   context 'parse method' do
     context 'when valid request' do
       it 'returns user object' do
-        result = request_obj.parse
-        expect(result[:user]).to eq(user)
+        auth_hash = request_obj.parse
+        expect(auth_hash[:user]).to eq(user)
       end
     end
 
     context 'when invalid request' do
-      context 'when missing token' do
-        it 'raises a MissingToken error' do
-          expect { invalid_request_obj.parse }
-            .to raise_error(ExceptionHandler::MissingToken, 'Missing token')
-        end
-      end
-
-      context 'when invalid token' do
-        subject(:invalid_request_obj) do
-          described_class.new(authorization: token_generator(5))
-        end
-
-        it 'raises an InvalidToken error' do
-          expect { invalid_request_obj.parse }
-            .to raise_error(ExceptionHandler::InvalidToken, /Invalid token/)
-        end
+      it 'returns NullUserRecord' do
+        auth_hash = invalid_request_obj.parse
+        expect(auth_hash[:user]).to be_kind_of(NullUserRecord)
       end
 
       context 'when token is expired' do
         let(:header) { {authorization: expired_token_generator(user.id)} }
         subject(:request_obj) { described_class.new(header) }
 
-        it 'raises ExceptionHandler::ExpiredSignature error' do
-          expect { request_obj.parse }
-            .to raise_error(
-              ExceptionHandler::InvalidToken,
-              /Signature has expired/
-            )
+        it 'expired in auth hash is true' do
+          auth_hash = request_obj.parse
+          expect(auth_hash[:auth_expired]).to eq(true)
         end
       end
 
@@ -51,12 +35,9 @@ RSpec.describe AuthorizeRequestParser do
         let(:header) { {authorization: 'foobar'} }
         subject(:invalid_request_obj) { described_class.new(header) }
 
-        it 'handles JWT::DecodeError' do
-          expect { invalid_request_obj.parse }
-            .to raise_error(
-              ExceptionHandler::InvalidToken,
-              /Not enough or too many segments/
-            )
+        it 'has valid in auth hash set to false' do
+          auth_hash = invalid_request_obj.parse
+          expect(auth_hash[:auth_valid]).to eq(false)
         end
       end
     end

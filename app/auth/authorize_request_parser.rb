@@ -5,7 +5,11 @@ class AuthorizeRequestParser
   end
 
   def parse
-    {user: user}
+    {
+      user: user,
+      auth_valid: decoded_auth_token.valid?,
+      auth_expired: decoded_auth_token.expired?
+    }
   end
 
   private
@@ -13,12 +17,11 @@ class AuthorizeRequestParser
   attr_reader :headers
 
   def user
-    @user ||= User.find(decoded_auth_token[:user_id]) if decoded_auth_token
-  rescue ActiveRecord::RecordNotFound => e
-    raise(
-      ExceptionHandler::InvalidToken,
-      ("#{Message.invalid_token} #{e.message}")
-    )
+    if decoded_auth_token.valid?
+      @user ||= ValidUserDecorator.find(decoded_auth_token.token[:user_id])
+    else
+      NullUserRecord.new
+    end
   end
 
   def decoded_auth_token
@@ -27,7 +30,5 @@ class AuthorizeRequestParser
 
   def http_auth_header
     return headers[:authorization].split(' ').last if headers[:authorization].present?
-
-    raise(ExceptionHandler::MissingToken, Message.missing_token)
   end
 end
