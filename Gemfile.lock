@@ -94,14 +94,17 @@ GEM
     mini_mime (1.0.2)
     mini_portile2 (2.4.0)
     minitest (5.11.3)
+    msgpack (1.3.1)
     msgpack (1.3.1-x64-mingw32)
     nio4r (2.4.0)
+    nokogiri (1.10.4)
+      mini_portile2 (~> 2.4.0)
     nokogiri (1.10.4-x64-mingw32)
       mini_portile2 (~> 2.4.0)
     parallel (1.17.0)
     parser (2.6.3.0)
       ast (~> 2.4.0)
-    puma (3.12.1)
+    puma (3.12.3)
     rack (2.0.7)
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
@@ -178,6 +181,7 @@ GEM
     will_paginate (3.1.8)
 
 PLATFORMS
+  ruby
   x64-mingw32
 
 DEPENDENCIES
@@ -189,7 +193,7 @@ DEPENDENCIES
   factory_bot_rails (~> 4.0)
   faker
   jwt
-  puma (~> 3.11)
+  puma (~> 3.12)
   rails (~> 5.2.3)
   rspec-rails (~> 3.5)
   rubocop
